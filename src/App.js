@@ -227,9 +227,6 @@ function App() {
 	const isDesktop = window.innerWidth > 768;
 	return (
 		<>
-			<div className="sitenote">
-				note: nrr calculator is experimental | nrr depends on the runs & overs
-			</div>
 			<h2 className="header">IPL 2024 Points Table Scenarios Calculator</h2>
 			<div className="table-container">
 				<div className="table-header">
@@ -344,6 +341,9 @@ function App() {
 			<div className="footer">
 				Made by a RCB fan with ❤️ and 😰 in 2022. Report any issues/feedback{" "}
 				<a href="https://twitter.com/rakesh_katti">@rakesh_katti</a>
+			</div>
+			<div className="sitenote">
+				note: nrr calculator is experimental | nrr depends on the runs & overs
 			</div>
 		</>
 	);
