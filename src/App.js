@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import "antd/dist/antd.css";
 import "./App.css";
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Game } from "./components/Game";
 import { Scenario } from "./components/Scenario";
 import { TableRow } from "./components/TableRow";
@@ -10,6 +10,14 @@ import { tabularData, matchData } from "./data";
 import { Button, Form, Select } from "antd";
 import { FormOutlined } from "@ant-design/icons";
 import FeedbackModal from "./components/FeedbackModal";
+import cloneDeep from "lodash/cloneDeep";
+
+function calculateNRR(runsScored, oversFaced, runsConceded, oversBowled) {
+	if (oversFaced === 0 || oversBowled === 0) return 0; // Prevent division by zero
+	const runRate = runsScored / oversFaced;
+	const runRateConceded = runsConceded / oversBowled;
+	return parseFloat((runRate - runRateConceded).toFixed(3));
+}
 
 function App() {
 	const [table, setTable] = useState(tabularData);
@@ -21,6 +29,53 @@ function App() {
 	const [selectedTeam, setSelectedTeam] = useState(null);
 	const [selectedPosition, setSelectedPosition] = useState(null);
 
+	const updateNRR = () => {
+		const updatedTable = cloneDeep(initialTable.current); // Use lodash's cloneDeep to deeply copy the table
+		Object.keys(updatedTable).forEach((team) => {
+			let teamData = updatedTable[team];
+			let runs_scored = teamData.runs_scored;
+			let runs_conceded = teamData.runs_conceded;
+			let overs_faced = teamData.overs_faced;
+			let overs_bowled = teamData.overs_bowled;
+
+			Object.keys(matches).forEach((matchId) => {
+				const mData = matches[matchId];
+				if (mData.t1 === team) {
+					runs_scored += mData.runsT1 || 0;
+					runs_conceded += mData.runsT2 || 0;
+					overs_faced += mData.oversT1 || 0;
+					overs_bowled += mData.oversT2 || 0;
+				}
+				if (mData.t2 === team) {
+					runs_scored += mData.runsT2 || 0;
+					runs_conceded += mData.runsT1 || 0;
+					overs_faced += mData.oversT2 || 0;
+					overs_bowled += mData.oversT1 || 0;
+				}
+			});
+
+			updatedTable[team] = {
+				...table[team],
+				runs_scored,
+				runs_conceded,
+				overs_faced,
+				overs_bowled,
+				nrr: calculateNRR(
+					runs_scored,
+					overs_faced,
+					runs_conceded,
+					overs_bowled
+				),
+			};
+		});
+
+		setTable(updatedTable);
+	};
+
+	useEffect(() => {
+		updateNRR(); // Call updateNRR when matches change
+	}, [matches]);
+
 	const resetAll = () => {
 		setSelectedPosition(null);
 		setSelectedTeam(null);
@@ -29,16 +84,28 @@ function App() {
 		setMatches(matchData);
 	};
 
+	// Function to handle changes in runs or overs
+	const handleRunsOversChange = (matchId, which, value) => {
+		setMatches((prev) => ({
+			...prev,
+			[matchId]: {
+				...prev[matchId],
+				[which]: value,
+			},
+		}));
+	};
+
 	let initialTable = useRef(table);
 	let initialMatchData = useRef(matches);
 
-	const tableComplete = () => {
-		let count = 0;
-		Object.keys(table).forEach((t) => {
-			if (table[t]["m"] === 14) count++;
-		});
-		return count > 7;
-	};
+	// const tableComplete = () => {
+	// 	let count = 0;
+	// 	Object.keys(table).forEach((t) => {
+	// 		if (table[t]["m"] === 14) count++;
+	// 	});
+	// 	return count > 7;
+	// };
+	// Update team statistics in table
 
 	const selectWinner = (match, winner) => {
 		const selectedMatch = matches[match];
@@ -46,8 +113,24 @@ function App() {
 		const team2 = selectedMatch.t2;
 		const winningTeam = winner;
 		const losingTeam = winner === team1 ? team2 : team1;
+
+		// Generate random runs for both teams
+		const runsForWinningTeam = Math.floor(Math.random() * 101) + 150; // 150 to 250
+		const runsForLosingTeam = Math.floor(Math.random() * 101) + 150; // 150 to 250
+
 		const winningTeamRow = table[winningTeam];
 		const losingTeamRow = table[losingTeam];
+
+		// Ensure winning team has more runs
+		const runsT1 =
+			winningTeam === team1
+				? Math.max(runsForWinningTeam, runsForLosingTeam + 1)
+				: Math.min(runsForWinningTeam, runsForLosingTeam - 1);
+		const runsT2 =
+			winningTeam === team2
+				? Math.max(runsForWinningTeam, runsForLosingTeam + 1)
+				: Math.min(runsForWinningTeam, runsForLosingTeam - 1);
+
 		if (selectedMatch.win === "") {
 			setTable({
 				...table,
@@ -91,6 +174,10 @@ function App() {
 			[match]: {
 				...selectedMatch,
 				win: winner,
+				runsT1,
+				runsT2,
+				oversT1: 20, // Default overs
+				oversT2: 20,
 			},
 		});
 
@@ -156,7 +243,7 @@ function App() {
 					<TableRow position={i + 1} team={team} {...table[team]} />
 				))}
 			</div>
-			<div className="sub-header">
+			{/* <div className="sub-header">
 				Possible outcomes at the current NRR.{" "}
 				<Button onClick={resetAll} type="danger">
 					RESET ALL
@@ -211,15 +298,25 @@ function App() {
 						<>No possible outcomes</>
 					)}
 				</div>
-			</div>
+			</div> */}
 
 			<div className="game-and-scenario">
-				<div className="game-container">
-					{Object.keys(matches).map((match) => (
+				<div className="gamecontainer">
+					{Object.keys(matches).map((matchId) => (
 						<Game
-							match={match}
-							selectWinner={selectWinner}
-							{...matches[match]}
+							match={matchId}
+							key={matchId}
+							t1={matches[matchId].t1}
+							t2={matches[matchId].t2}
+							win={matches[matchId].win}
+							runsT1={matches[matchId].runsT1}
+							runsT2={matches[matchId].runsT2}
+							oversT1={matches[matchId].oversT1}
+							oversT2={matches[matchId].oversT2}
+							handleRunsOversChange={(which, value) =>
+								handleRunsOversChange(matchId, which, value)
+							}
+							selectWinner={(winner) => selectWinner(matchId, winner)}
 						/>
 					))}
 				</div>
