@@ -206,3 +206,11 @@ button {
 button:hover {
 	background-color: #0056b3;
 }
+
+.sitenote {
+	position: fixed;
+	bottom: 0;
+	background-color: rgba(255, 255, 0, 0.8);
+	padding: 0 5px;
+	text-align: center;
+}

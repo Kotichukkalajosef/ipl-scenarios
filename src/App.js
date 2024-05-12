@@ -68,12 +68,12 @@ function App() {
 				),
 			};
 		});
-
 		setTable(updatedTable);
 	};
 
 	useEffect(() => {
 		updateNRR(); // Call updateNRR when matches change
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [matches]);
 
 	const resetAll = () => {
@@ -227,6 +227,9 @@ function App() {
 	const isDesktop = window.innerWidth > 768;
 	return (
 		<>
+			<div className="sitenote">
+				note: nrr calculator is experimental | nrr depends on the runs & overs
+			</div>
 			<h2 className="header">IPL 2024 Points Table Scenarios Calculator</h2>
 			<div className="table-container">
 				<div className="table-header">
@@ -299,7 +302,6 @@ function App() {
 					)}
 				</div>
 			</div> */}
-
 			<div className="game-and-scenario">
 				<div className="gamecontainer">
 					{Object.keys(matches).map((matchId) => (
