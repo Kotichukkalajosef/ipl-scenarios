@@ -5,6 +5,7 @@ export const Game = ({
 	t1,
 	t2,
 	win,
+	toggle,
 	match,
 	runsT1,
 	runsT2,
@@ -28,7 +29,7 @@ export const Game = ({
 				>
 					{t1.toUpperCase()}
 				</Button>
-				{win && (
+				{win && toggle && (
 					<>
 						<div className="game-inputs">
 							<div>
@@ -63,7 +64,7 @@ export const Game = ({
 				>
 					{t2.toUpperCase()}
 				</Button>
-				{win && (
+				{win && toggle && (
 					<>
 						<div className="game-inputs">
 							<div>

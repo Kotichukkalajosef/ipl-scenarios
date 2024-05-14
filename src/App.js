@@ -11,6 +11,7 @@ import { Button, Form, Select } from "antd";
 import { FormOutlined } from "@ant-design/icons";
 import FeedbackModal from "./components/FeedbackModal";
 import cloneDeep from "lodash/cloneDeep";
+import { Switch } from "antd";
 
 function calculateNRR(runsScored, oversFaced, runsConceded, oversBowled) {
 	if (oversFaced === 0 || oversBowled === 0) return 0; // Prevent division by zero
@@ -28,6 +29,7 @@ function App() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedTeam, setSelectedTeam] = useState(null);
 	const [selectedPosition, setSelectedPosition] = useState(null);
+	const [toggle, setToggle] = useState(true);
 
 	const updateNRR = () => {
 		const updatedTable = cloneDeep(initialTable.current); // Use lodash's cloneDeep to deeply copy the table
@@ -80,8 +82,8 @@ function App() {
 		setSelectedPosition(null);
 		setSelectedTeam(null);
 		setScenario({ title: "Select an outcome" });
-		setTable(tabularData);
-		setMatches(matchData);
+		setTable(initialTable.current);
+		setMatches(initialMatchData.current);
 	};
 
 	// Function to handle changes in runs or overs
@@ -197,7 +199,7 @@ function App() {
 	const scenariosWithCustom =
 		selectedTeam && selectedPosition
 			? filterPossibleOutcomes(scenarios, selectedTeam, selectedPosition)
-			: [];
+			: scenarios;
 
 	const updateScenario = (value) => {
 		const selectedScenario = scenariosWithCustom.filter(
@@ -243,66 +245,84 @@ function App() {
 					<TableRow position={i + 1} team={team} {...table[team]} />
 				))}
 			</div>
-			{/* <div className="sub-header">
-				Possible outcomes at the current NRR.{" "}
+			<div className="sub-header">
+				<Switch
+					checkedChildren="NRR Simulator"
+					unCheckedChildren="Possible Outcomes"
+					value={toggle}
+					onChange={(value) => {
+						setToggle(value);
+						resetAll();
+					}}
+					defaultChecked
+				/>
 				<Button onClick={resetAll} type="danger">
 					RESET ALL
 				</Button>
 			</div>
-			<div className="scenarios-section">
-				<div className="scenario">
-					Select Team:
-					<Form.Item>
-						<Select
-							onChange={(value) => setSelectedTeam(value)}
-							placeholder="Select a team"
-							value={selectedTeam}
-						>
-							{Object.keys(table).map((t) => (
-								<Select.Option key={t} value={t}>
-									{t.toUpperCase()}
-								</Select.Option>
-							))}
-						</Select>
-					</Form.Item>
-				</div>
-				<div className="scenario">
-					Select Position:
-					<Form.Item>
-						<Select
-							onChange={(value) => setSelectedPosition(value)}
-							placeholder="Select a Position"
-							value={selectedPosition}
-						>
-							<Select.Option key={1} value={1}></Select.Option>
-							<Select.Option key={2} value={2}></Select.Option>
-							<Select.Option key={3} value={3}></Select.Option>
-							<Select.Option key={4} value={4}></Select.Option>
-						</Select>
-					</Form.Item>
-				</div>
-				<div className="scenario">
-					{scenarios.length !== 0 ? (
-						<>
-							Possible outcomes -{" "}
-							{selectedTeam && selectedPosition
-								? scenariosWithCustom.length
-								: scenarios.length}
-							<Scenario
-								updateScenario={updateScenario}
-								scenarios={scenariosWithCustom}
-								currentScenario={currentScenario}
-							/>
-						</>
-					) : (
-						<>No possible outcomes</>
-					)}
-				</div>
-			</div> */}
+
+			{!toggle && (
+				<>
+					<div className="sub-header">
+						Possible outcomes at the current NRR.{" "}
+					</div>
+					<div className="scenarios-section">
+						<div className="scenario">
+							Select Team:
+							<Form.Item>
+								<Select
+									onChange={(value) => setSelectedTeam(value)}
+									placeholder="Select a team"
+									value={selectedTeam}
+								>
+									{Object.keys(table).map((t) => (
+										<Select.Option key={t} value={t}>
+											{t.toUpperCase()}
+										</Select.Option>
+									))}
+								</Select>
+							</Form.Item>
+						</div>
+						<div className="scenario">
+							Select Position:
+							<Form.Item>
+								<Select
+									onChange={(value) => setSelectedPosition(value)}
+									placeholder="Select a Position"
+									value={selectedPosition}
+								>
+									<Select.Option key={1} value={1}></Select.Option>
+									<Select.Option key={2} value={2}></Select.Option>
+									<Select.Option key={3} value={3}></Select.Option>
+									<Select.Option key={4} value={4}></Select.Option>
+								</Select>
+							</Form.Item>
+						</div>
+						<div className="scenario">
+							{scenarios.length !== 0 ? (
+								<>
+									Possible outcomes -{" "}
+									{selectedTeam && selectedPosition
+										? scenariosWithCustom.length
+										: scenarios.length}
+									<Scenario
+										updateScenario={updateScenario}
+										scenarios={scenariosWithCustom}
+										currentScenario={currentScenario}
+									/>
+								</>
+							) : (
+								<>No possible outcomes</>
+							)}
+						</div>
+					</div>
+				</>
+			)}
 			<div className="game-and-scenario">
 				<div className="gamecontainer">
 					{Object.keys(matches).map((matchId) => (
 						<Game
+							toggle={toggle}
 							match={matchId}
 							key={matchId}
 							t1={matches[matchId].t1}
