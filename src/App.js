@@ -31,14 +31,19 @@ function App() {
 	const [selectedPosition, setSelectedPosition] = useState(null);
 	const [toggle, setToggle] = useState(true);
 
+	const convertOversDecimals = (overs) => {
+		const [o, b = 0] = String(overs).split(".");
+		return parseFloat(o) + parseFloat(b * 0.166);
+	};
+
 	const updateNRR = () => {
 		const updatedTable = cloneDeep(initialTable.current); // Use lodash's cloneDeep to deeply copy the table
 		Object.keys(updatedTable).forEach((team) => {
 			let teamData = updatedTable[team];
 			let runs_scored = teamData.runs_scored;
 			let runs_conceded = teamData.runs_conceded;
-			let overs_faced = teamData.overs_faced;
-			let overs_bowled = teamData.overs_bowled;
+			let overs_faced = convertOversDecimals(teamData.overs_faced);
+			let overs_bowled = convertOversDecimals(teamData.overs_bowled);
 
 			Object.keys(matches).forEach((matchId) => {
 				const mData = matches[matchId];
@@ -362,9 +367,9 @@ function App() {
 				Made by a RCB fan with ❤️ and 😰 in 2022. Report any issues/feedback{" "}
 				<a href="https://twitter.com/rakesh_katti">@rakesh_katti</a>
 			</div>
-			<div className="sitenote">
+			{/* <div className="sitenote">
 				note: nrr calculator is experimental | nrr depends on the runs & overs
-			</div>
+			</div> */}
 		</>
 	);
 }
