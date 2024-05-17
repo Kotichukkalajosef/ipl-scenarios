@@ -36,12 +36,12 @@ export const tabularData = {
 		overs_bowled: 254.3,
 	},
 	srh: {
-		m: 12,
+		m: 13,
 		w: 7,
 		l: 5,
-		nr: 0,
+		nr: 1,
 		nrr: 0.406,
-		p: 14,
+		p: 15,
 		runs_scored: 2390,
 		overs_faced: 227.5,
 		runs_conceded: 2385,
@@ -84,12 +84,12 @@ export const tabularData = {
 		overs_bowled: 242.3,
 	},
 	gt: {
-		m: 13,
+		m: 14,
 		w: 5,
 		l: 7,
-		nr: 1,
+		nr: 2,
 		nrr: -1.063,
-		p: 11,
+		p: 12,
 		runs_scored: 2040,
 		overs_faced: 238.2,
 		runs_conceded: 2101,
@@ -122,15 +122,6 @@ export const tabularData = {
 };
 
 export const matchData = {
-	66: {
-		t1: "srh",
-		t2: "gt",
-		win: "",
-		runsT1: 0,
-		runsT2: 0,
-		oversT1: 0,
-		oversT2: 0,
-	},
 	67: {
 		t1: "mi",
 		t2: "lsg",
