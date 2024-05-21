@@ -235,6 +235,23 @@ function App() {
 	return (
 		<>
 			<h2 className="header">IPL 2024 Points Table Scenarios Calculator</h2>
+			<div className="thank-you">
+				<div>
+					Thank you all for the support! You can Follow me on{" "}
+					<a href="https://x.com/rakesh_katti">twitter</a> for new updates or
+					provide feedback for next season by clicking on the following button{" "}
+				</div>
+				<Button
+					type="primary"
+					onClick={() => setIsModalOpen(true)}
+					icon={<FormOutlined />}
+					style={{
+						textAlign: "center",
+					}}
+				>
+					{isDesktop && "Give Feedback"}
+				</Button>
+			</div>
 			<div className="table-container">
 				<div className="table-header">
 					<div></div>
@@ -250,7 +267,6 @@ function App() {
 					<TableRow position={i + 1} team={team} {...table[team]} />
 				))}
 			</div>
-
 			{/* <div className="sub-header">
 				<Switch
 					checkedChildren="NRR Simulator"
@@ -266,7 +282,6 @@ function App() {
 					RESET ALL
 				</Button>
 			</div> */}
-
 			{!toggle && (
 				<>
 					<div className="sub-header">
@@ -346,19 +361,6 @@ function App() {
 					))}
 				</div>
 			</div>
-			<Button
-				type="primary"
-				onClick={() => setIsModalOpen(true)}
-				icon={<FormOutlined />}
-				style={{
-					position: "fixed",
-					right: "20px",
-					bottom: "20px",
-					zIndex: 1000,
-				}}
-			>
-				{isDesktop && "Give Feedback"}
-			</Button>
 			<FeedbackModal
 				isModalOpen={isModalOpen}
 				setIsModalOpen={setIsModalOpen}
@@ -366,7 +368,7 @@ function App() {
 			/>
 			<div className="footer">
 				Made by a RCB fan with ❤️ and 😰 in 2022. Report any issues/feedback{" "}
-				<a href="https://twitter.com/rakesh_katti">@rakesh_katti</a>
+				<a href="https://x.com/rakesh_katti">@rakesh_katti</a>
 			</div>
 			{/* <div className="sitenote">
 				note: nrr calculator is experimental | nrr depends on the runs & overs
