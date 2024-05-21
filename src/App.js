@@ -250,7 +250,8 @@ function App() {
 					<TableRow position={i + 1} team={team} {...table[team]} />
 				))}
 			</div>
-			<div className="sub-header">
+
+			{/* <div className="sub-header">
 				<Switch
 					checkedChildren="NRR Simulator"
 					unCheckedChildren="Possible Outcomes"
@@ -264,7 +265,7 @@ function App() {
 				<Button onClick={resetAll} type="danger">
 					RESET ALL
 				</Button>
-			</div>
+			</div> */}
 
 			{!toggle && (
 				<>
